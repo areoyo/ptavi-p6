@@ -34,7 +34,6 @@ if datos[2] == 'Trying' and datos[8] == 'OK':
     METODO = 'ACK'
     LINE = METODO + " sip:" + LOGIN + "@" + SERVER + " SIP/2.0\r\n\r\n"
     my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
-    data = my_socket.recv(1024)
 
 print("Terminando socket...")
 
