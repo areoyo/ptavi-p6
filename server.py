@@ -3,9 +3,14 @@
 """
 Clase (y programa principal) para un servidor de eco en UDP simple
 """
+import sys
+import socketserver #TENGO QUE INICIARLO CON Python3
+import os
 
-import socketserver
-
+if len(sys.argv) != 4:
+    sys.exit("Usage: python  server.py IP port audio_file")    
+_, IP, PORT, FICH = sys.argv
+PORT = int(PORT)
 
 class EchoHandler(socketserver.DatagramRequestHandler):
     """
@@ -14,18 +19,35 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
+        
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
-            print("El cliente nos manda " + line.decode('utf-8'))
+            datos = line.decode('utf-8').split()
 
             # Si no hay más líneas salimos del bucle infinito
             if not line:
                 break
 
+            if datos[0] == "INVITE":
+                self.wfile.write (b"SIP/2.0 100 Trying" + b"\r\n")
+                self.wfile.write (b"SIP/2.0 180 Ring" + b"\r\n")
+                self.wfile.write (b"SIP/2.0 200 OK" + b"\r\n")
+            #if datos[0] == "ACK":
+                # aEjecutar es un string con lo que se ha de ejecutar en la shell
+                #aEjecutar = 'mp32rtp -i' + IP + '-p' + PORT + ' <' + FICH
+                #print ("Vamos a ejecutar " + aEjecutar)
+                #os.system(aEjecutar)
+            if datos[0] == "BYE":
+                self.wfile.write (b"\r\n" + b"SIP/2.0 200 OK" + b"\r\n")
+            elif datos[0] != "INVITE" or "BYE" or "ACK":
+                self.wfile.write (b"\r\n" + b"SIP/2.0 405 Method Not Allowed" + b"\r\n")
+            else:
+                self.wfile.write (b"\r\n" + b"SIP/2.0 400 Bad Request" + b"\r\n")
+            
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
-    serv = socketserver.UDPServer(('', 6001), EchoHandler)
-    print("Lanzando servidor UDP de eco...")
+    serv = socketserver.UDPServer((IP, PORT), EchoHandler)
+    print("Listening...")
     serv.serve_forever()
+
