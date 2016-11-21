@@ -33,11 +33,11 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                 self.wfile.write (b"SIP/2.0 100 Trying" + b"\r\n")
                 self.wfile.write (b"SIP/2.0 180 Ring" + b"\r\n")
                 self.wfile.write (b"SIP/2.0 200 OK" + b"\r\n")
-            #if datos[0] == "ACK":
-                # aEjecutar es un string con lo que se ha de ejecutar en la shell
-                #aEjecutar = 'mp32rtp -i' + IP + '-p' + PORT + ' <' + FICH
-                #print ("Vamos a ejecutar " + aEjecutar)
-                #os.system(aEjecutar)
+            if datos[0] == "ACK":
+                #aEjecutar es un string con lo que se ha de ejecutar en la shell
+                aEjecutar = "mp32rtp -i" + IP + "-p 23032 <" + FICH
+                print ("Vamos a ejecutar ", aEjecutar)
+                os.system(aEjecutar)
             if datos[0] == "BYE":
                 self.wfile.write (b"\r\n" + b"SIP/2.0 200 OK" + b"\r\n")
             elif datos[0] != "INVITE" or "BYE" or "ACK":
