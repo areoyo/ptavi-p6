@@ -7,8 +7,9 @@ Programa cliente que abre un socket a un servidor
 import sys
 import socket
 
+
 if len(sys.argv) != 3:
-   sys.exit("Usage: python client.py method receiver@IP:SIPport")
+    sys.exit("Usage: python client.py method receiver@IP:SIPport")
 
 METODO = sys.argv[1]
 LOGIN = sys.argv[2].split('@')[0]
